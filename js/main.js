@@ -2,18 +2,26 @@ $(function(){
 	less.logLevel = 0;
 	less.watch();
 
-	/*$( '.sortable' ).sortable({
-        placeholder: 'ui-state-highlight'
-    });*/
 	$('.sortable').nestedSortable({
 		listType:'ul',
         handle:'div',
         items:'li',
         toleranceElement:'> div',
-		placeholder: 'ui-state-highlight'
+		placeholder: 'ui-state-highlight',
+		distance: 15,
+		isTree: true,
+		cancel: 'input,span'
     });
 
 	$('#task-list').tooltip();
+
+	var lst = $(window).scrollTop();
+	$(window).on('scroll', function(e){
+		var isDown = $(window).scrollTop() > lst;
+		lst = $(window).scrollTop();
+		if(isDown||lst==0) $('#content').removeClass('fixed-header');
+		else $('#content').addClass('fixed-header');
+	});
 
 	var Task = Backbone.Model.extend({
 		initialize: function () {
@@ -22,6 +30,7 @@ $(function(){
 			if (!this.get('time')) this.set({time: 0});
 			if (!this.get('started')) this.set({started: false});
 			if (!this.get('comment')) this.set({comment: ''});
+			if (!this.get('parent')) this.set({parent: false});
 			if(this.get('started')) this.start();
 			this.save(); // TODO: сохранение при создании сделано только из-за того, что шаблону нужен id
 		},
@@ -71,7 +80,7 @@ $(function(){
 	});
 
 
-	var TaskList = Backbone.Collection.extend({
+	var TaskList = Backbone.Collection.extend({ // ok
 		model: Task,
 		localStorage: new Store('tasks'),
 
@@ -86,12 +95,12 @@ $(function(){
 		},
 
 		totalTime: function(field) {
-			return _.reduce(
+			return this.length ? _.reduce(
 				this.pluck(field),
 				function(totalTime, time){
 					return totalTime + time;
 				}
-			);
+			) : 0;
 		},
 
 		nextOrder: function () {
@@ -124,11 +133,11 @@ $(function(){
 			'click .check': 'toggleDone',
 			'dblclick .task-name:first,.task-time_plan:first,.task-time:first': 'edit',
 			'click .task-edit:first': 'edit',
-			'click': 'focus',
+			'click :first': 'focus',
 			'click .task-destroy:first': 'clear',
-			'click .task-start': 'start',
-			'click .task-stop': 'stop',
-			'click .task-comment': 'editComment',
+			'click .task-start:first': 'start',
+			'click .task-stop:first': 'stop',
+			'click .task-comment:first': 'editComment',
 			'keydown [name="name"]:first': 'keypress',
 			'keydown [name="time_plan"]:first': 'keypress',
 			'keydown [name="time"]:first': 'keypress'
@@ -187,7 +196,7 @@ $(function(){
 
 		edit: function (e) {
 			$(this.id).addClass('editing');
-			console.log($(e.target));
+			//console.log($(e.target));
 			if($(e.target).hasClass('task-time')) $(this.id).find('[name="time"]').focus().select();
 			else if($(e.target).hasClass('task-time_plan')) $(this.id).find('[name="time_plan"]').focus().select();
 			else $(this.id).find('[name="name"]').focus().select();
@@ -292,6 +301,7 @@ $(function(){
 			tasks.bind('refresh', this.addAllTasks);
 			tasks.bind('all', this.render);
 			this.addAllTasks();
+			tasks.trigger('all');
 		},
 
 		render: function () {
@@ -306,17 +316,32 @@ $(function(){
 
 		addTask: function (task) {
 			var view = new TaskView({model: task});
-			this.$('#task-list').append(view.render().el);
+			// TODO: убрать жкуери-стайл
+			var cont = $('#task-list');
+			if(task.get('parent')){
+				var parentView = $('#'+task.get('parent'));
+				if(parentView.size()>0){
+					cont = parentView.find('+ul');
+					if(cont.size()==0 && parentView.size()>0){
+						cont = $('<ul></ul>').insertAfter(parentView);
+					}
+				}
+				/*else{
+					task.model.set({ parent: false });
+				}*/
+			}
+			cont.append(view.render().el);
 		},
 
 		addAllTasks: function () {
 			tasks.each(this.addTask);
 		},
 
-		newAttributes: function () {
+		newAttributes: function () { //ok
 			var attrs = {
 				name: '...',
 				order: tasks.nextOrder(),
+				parent: false,
 				done: false,
 				time_plan: 0,
 				time: 0,
@@ -325,6 +350,9 @@ $(function(){
 				startTime: 0,
 				startTimestamp: false
 			};
+
+			if($('.task.focused').size()>0) attrs.parent = $('.task.focused').attr('id');
+
 			// TODO: в таких местах полный гон, надо выделить обработчики полей
 			this.inputs.each(function(){
 				var name = $(this).attr('name');
@@ -369,7 +397,12 @@ $(function(){
 			$('#task-list .task').each(function(){
 				var id = $(this).attr('id');
 				var task = tasks.get(id);
-				task.save({order:order});
+				var parentTask = $(this).parents('ul').prev('.task');
+				var parent = parentTask.size()>0 ? parentTask.attr('id') : false;
+				task.save({
+					order: order,
+					parent: parent
+				});
 				order++;
 			});
 		},
