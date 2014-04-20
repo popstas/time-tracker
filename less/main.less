@@ -34,7 +34,7 @@ td{
   font-size:0.9em;
 }
 
-
+.white{ opacity:0; width:0 !important; }
 
 
 
@@ -46,16 +46,32 @@ td{
   border-radius:0 0 5px 5px;
 }
 
+#content.fixed-header{
+  padding-top:47px;
+  header{
+    padding-top:37px;
+    width:100%;
+    max-width:980px;
+    position:fixed;
+    top:-27px;
+    z-index:2;
+    background:#fff;
+    box-shadow:0 2px 6px 0 rgba(0, 0, 0, 0.2);
+    transition:padding 0.5s ease;
+  }
+}
+
 header, main{
   padding:10px;
 }
 
   header{
-    height:1.5em;
+    height:27px;
+    transition:0s;
     #new-task{
       margin-right:-10px;
       float:left;
-      width:96%;
+      width:95%;
     }
     .task-button{
       margin:-5px -10px 0 0;
@@ -96,6 +112,30 @@ header, main{
     [name="time"]{ width:10%; }
   }
 
+  #filter-list{
+    li{
+      //margin: 0 5px 0 0;
+      display: inline-block;
+    }
+    .filter-item{
+      margin: 0 15px 0 -5px;
+      padding: 0 5px;
+      background: #ffffaa;
+      border-radius: 5px;
+      color: #666;
+      font-size: 0.8em;
+
+      &.active{
+        background: #ffffaa;
+      }
+
+      input{
+        margin: 6px 3px 0 0;
+        float: left;
+      }
+    }
+  }
+
   #task-list{
     margin:0 -10px;
   }
@@ -121,6 +161,16 @@ header, main{
         }
       }
 
+      &.hidden{
+        display: none;
+      }
+
+      &.done{
+        height:16px;
+        font-size:12px;
+        overflow:hidden;
+        .task-button{ padding:0 10px; }
+      }
       input[type="text"]{
         font-size:1em;
         padding:0 5px;

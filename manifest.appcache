@@ -1,0 +1,28 @@
+CACHE MANIFEST
+# 2014-04-21
+
+CACHE:
+/favicon.ico
+#css/*
+css/smoothness/jquery-ui-1.10.3.custom.css
+css/fontello.css
+
+#js/*
+js/jquery-2.0.3.min.js
+js/jquery-ui-1.10.3.custom.min.js
+js/jquery.mjs.nestedSortable.js
+js/less-1.5.0.min.js
+js/underscore.js
+js/backbone.js
+js/backbone.localStorage.js
+js/plugins.js
+font/fontello.woff?65534132
+font/fontello.ttf?65534132
+font/fontello.svg?65534132
+
+js/main.js
+less/main.less
+index.html
+
+NETWORK:
+*

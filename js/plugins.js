@@ -4,4 +4,3 @@ String.prototype.lpad = function(padString, length) {
         str = padString + str;
     return str;
 };
-
