@@ -69,13 +69,13 @@ header, main{
     height:27px;
     transition:0s;
     #new-task{
-      margin-right:-10px;
+      margin-right:-25px;
       float:left;
       width:95%;
     }
     .task-button{
       margin:-5px -10px 0 0;
-      padding:5px;
+      padding:5px 3px;
       float:right;
     }
   }
@@ -193,7 +193,7 @@ header, main{
           float:right;
         }
         .time input{
-          width:75px;
+          width:27px;
         }
       }
 
@@ -274,3 +274,19 @@ footer{
       }
     }
   }
+
+
+.no_time_plan{
+  input[name="time_plan"], span .task-time_plan{
+    display: none;
+  }
+  .task .task-control{
+    right: 35px;
+  }
+  #new-task [name="name"]{
+    width: 85%;
+  }
+  .time .task-time_plan+.white{
+    display: none;
+  }
+}
