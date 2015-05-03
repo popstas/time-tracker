@@ -1,8 +1,6 @@
 # time_tracker
 Backbone & Jquery UI app, hierarchical task timer.
 
-Only russian language!
-
 Demo: http://time.viasite.ru/
 
 ![Screenshot](img/screenshot.png?raw=true)

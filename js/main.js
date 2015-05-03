@@ -289,7 +289,7 @@ $(function () {
       // TODO: не надо события засовывать где попало, отсюда и task = this
       var task = this;
       $(html).dialog({
-        title: 'Изменение комментария',
+        title: 'Edit comment',
         width: 400,
         modal: true,
         buttons: {
@@ -342,7 +342,7 @@ $(function () {
     },
 
     clear: function () {
-      if (confirm('Удалить задачу?')) {
+      if (confirm('Delete task?')) {
         this.model.clear();
         // TODO: вложенные задачи визуально пропадают, но не удаляются
         //tasks.trigger('refresh');
@@ -402,7 +402,7 @@ $(function () {
 
   var AppView = Backbone.View.extend({
     el: $('body'),
-    name: 'Задачи',
+    name: 'Tasks',
 
     statsTemplate: _.template($('#stats-template').html()),
     settingsTemplate: _.template($('#settings-template').html()),
@@ -453,7 +453,7 @@ $(function () {
       this.filters.reset();
       this.filters.create({
         name: 'done',
-        label: 'завершенные',
+        label: 'completed',
         checked: true,
         handler: function (task) {
           return task.get('done')
@@ -461,7 +461,7 @@ $(function () {
       });
       this.filters.create({
         name: 'zero',
-        label: 'не начатые',
+        label: 'zero time',
         checked: true,
         handler: function (task) {
           return task.get('time') == 0
@@ -601,14 +601,14 @@ $(function () {
       var html = this.settingsTemplate(this.settings);
 
       $(html).dialog({
-        title: 'Настройки',
+        title: 'Settings',
         width: 400,
         modal: true
       });
     },
 
     zeroTimes: function () {
-      if (confirm('Сбросить все время?')) {
+      if (confirm('Reset all tasks time?')) {
         tasks.zeroTimes();
       }
     },
@@ -619,7 +619,7 @@ $(function () {
         json: JSON.stringify(tasks)
       });
       $(html).dialog({
-        title: 'Экспорт в JSON',
+        title: 'Export to JSON',
         width: 400,
         modal: true
       });
@@ -627,18 +627,18 @@ $(function () {
     },
 
     exportTable: function () {
-      alert('Возможно, потом эта функция появится');
+      alert('Not implemented');
     },
 
     exportEmail: function () {
-      alert('Возможно, потом эта функция появится');
+      alert('Not implemented');
     },
 
     globalKeypress: function (e) {
       if (e.keyCode == 46) { // del
         var focused = tasks.focused();
         if (focused.length > 0) {
-          if (confirm('Удалить задачи (' + focused.length + ')?')) {
+          if (confirm('Delete tasks (' + focused.length + ')?')) {
             $.each(focused, function (ind, task) {
               task.clear();
             });
@@ -688,8 +688,8 @@ $(function () {
       if ($.type(msg) == 'object') {
         var task = msg;
         title = task.get('name');
-        body = Math.round((new Date().getTime() - task.get('startTimestamp')) / 60000) + ' минут без перерыва' + "\n" +
-          Math.round(task.get('time') / 60) + ' минут всего'
+        body = Math.round((new Date().getTime() - task.get('startTimestamp')) / 60000) + ' minutes without pause' + "\n" +
+          Math.round(task.get('time') / 60) + ' minutes total'
       }
       this.loglist.create({text: 'notifyDesktop'});
       var notify = new Notification(title, {

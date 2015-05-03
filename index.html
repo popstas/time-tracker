@@ -3,7 +3,7 @@
 <!-- manifest="manifest-.appcache"-->
 <head>
     <meta charset="utf-8">
-    <title>Задачи</title>
+    <title>Tasks</title>
     <meta name="description" content="">
     <link rel="apple-touch-icon" type="image/png" href="img/icon32.png">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -37,9 +37,9 @@
 <div id="content">
     <header id="header">
         <div id="new-task">
-            <input name="name" autofocus x-webkit-speech autocomplete="off" placeholder="Новая задача" type="text"/>
-            <input name="time_plan" placeholder="план" type="text"/>
-            <input name="time" placeholder="факт" type="text"/>
+            <input name="name" autofocus x-webkit-speech autocomplete="off" placeholder="New task" type="text"/>
+            <input name="time_plan" placeholder="plan" type="text"/>
+            <input name="time" placeholder="fact" type="text"/>
         </div>
         <span class="task-button settings"><i class="icon-cog"></i></span>
         <span class="task-button zero-times"><i class="icon-cc-zero"></i></span>
@@ -107,7 +107,7 @@
     <% if (total) { %>
     <div>
         <span class="task-count">
-            <span class="number"><%= done %> / <%= total %> </span> задач выполнено
+            <span class="number"><%= done %> / <%= total %> </span> tasks completed
 
         </span>
         <span class="time">
@@ -116,7 +116,7 @@
         </span>
     </div>
     <div>
-        <span>Время в часах</span>
+        <span>Hours spent</span>
         <span class="time">
             <span class="total-time_plan"><%= (total_time_plan/3600).toFixed(1) %></span>
             <span class="total-time"><%= (total_time/3600).toFixed(1) %></span>
@@ -130,19 +130,16 @@
     <div>
         <div class="block-share share">
             <span class="task-button share"><i class="icon-share"></i></span>
-            <span title="Скопировать код задач для вставки в другой браузер" class="task-button export-json"><i class="icon-code"></i></span>
-            <!--<span title="Отправить задачи на email" class="task-button export-email"><i class="icon-mail"></i></span>-->
-            <!--<span title="Показать таблицу для вставки задач в Excel" class="task-button export-table"><i class="icon-table"></i></span>-->
+            <span title="Please, copy textarea content and paste in 'new task' input" class="task-button export-json"><i class="icon-code"></i></span>
         </div>
-        <div class=""><button class="settings-notify-desktop">Включить уведомления</button></div>
+        <div class=""><button class="settings-notify-desktop">Enable desktop notifications</button></div>
     </div>
 </script>
 
 
 <script type="text/template" id="export-json-template">
     <div>
-        <div>Скопируйте текст в текстовом поле и вставьте в другом браузере в поле "Новая задача", нажмите Enter.
-        Если эти задачи уже добавлялись ранее, они не будут обновлены.</div>
+        <div>Please, copy textarea content and paste in "New task" input and press Enter.</div>
         <textarea class="json-data"><%= json %></textarea>
     </div>
 </script>
