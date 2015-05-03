@@ -424,8 +424,10 @@ $(function () {
       'timeChanged .task': 'timeChanged',
       'start .task': 'taskStarted',
       'stop .task': 'taskStopped',
-      'click .settings-notify-desktop': 'requestNotifyDesktop'
-      //'change #filters': 'filterChanged'
+      'click .settings-notify-desktop': 'requestNotifyDesktop',
+      'click #tasklist-info_file_select': 'gdrivePicker'
+
+       //'change #filters': 'filterChanged'
     },
 
     initialize: function () {
@@ -470,6 +472,8 @@ $(function () {
         var view = new FilterItemView({model: filter});
         cont.append(view.render().el);
       });
+
+      this.syncToDrive('tasks.tasklist');
     },
 
     render: function () {
@@ -694,6 +698,86 @@ $(function () {
         body: body
       });
 
+    },
+
+
+    syncToDrive: function(filename){
+      var filename = 'default';
+      $.ajax({
+        url: 'https://script.google.com/macros/s/AKfycby7KDR9dTNETWNhGLVYiO81QN2t5TQ-9Yvw_HdFoB8/dev',
+        data: { json: JSON.stringify(tasks), filename: filename },
+        type: 'post',
+        dataType: 'jsonp',
+        success:function(data){
+          console.log(data);
+        }
+      });
+    },
+
+    gdrivePicker: function(){
+// The Browser API key obtained from the Google Developers Console.
+      var googleDeveloperKey = 'ABC123 ... ';
+
+      // The Client ID obtained from the Google Developers Console.
+      var clientId = '915615549870-g2j6vpfm7f2gei1oangkuo588pg4h4uk.apps.googleusercontent.com';
+
+      // Scope to use to access user's photos.
+      var scope = ['https://www.googleapis.com/auth/photos'];
+
+      var pickerApiLoaded = false;
+      var oauthToken;
+
+      // Use the API Loader script to load google.picker and gapi.auth.
+      function onApiLoad() {
+        gapi.load('auth', {'callback': onAuthApiLoad});
+        gapi.load('picker', {'callback': onPickerApiLoad});
+      }
+
+      function onAuthApiLoad() {
+        window.gapi.auth.authorize(
+          {
+            'client_id': clientId,
+            'scope': scope,
+            'immediate': false
+          },
+          handleAuthResult);
+      }
+
+      function onPickerApiLoad() {
+        pickerApiLoaded = true;
+        createPicker();
+      }
+
+      function handleAuthResult(authResult) {
+        if (authResult && !authResult.error) {
+          oauthToken = authResult.access_token;
+          createPicker();
+        }
+      }
+
+      // Create and render a Picker object for picking user Photos.
+      function createPicker() {
+        if (pickerApiLoaded && oauthToken) {
+          var picker = new google.picker.PickerBuilder().
+            addView(google.picker.ViewId.PHOTOS).
+            setOAuthToken(oauthToken).
+            setDeveloperKey(googleDeveloperKey).
+            setCallback(pickerCallback).
+            build();
+          picker.setVisible(true);
+        }
+      }
+
+      // A simple callback implementation.
+      function pickerCallback(data) {
+        var url = 'nothing';
+        if (data[google.picker.Response.ACTION] == google.picker.Action.PICKED) {
+          var doc = data[google.picker.Response.DOCUMENTS][0];
+          url = doc[google.picker.Document.URL];
+        }
+        var message = 'You picked: ' + url;
+        this.notifyDesktop(message);
+      }
     }
   });
 
