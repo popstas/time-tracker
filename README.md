@@ -2,7 +2,7 @@
 Backbone & Jquery UI app, hierarchical task timer.
 
 Demo: http://popstas.github.io/time-tracker/
-
+Blog post: http://popstas.github.io/blog/2015/11/22/simple-time-tracker/
 ![Screenshot](img/screenshot.png?raw=true)
 
 ## Features
