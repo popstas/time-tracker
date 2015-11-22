@@ -39,12 +39,16 @@ $(function () {
       if ('speechSynthesis' in window) {
 
       }
+    },
+
+    save: function(){
+      return false;
     }
   });
 
   var LogList = Backbone.Collection.extend({
     model: LogItem,
-    localStorage: new Store('log'),
+    //localStorage: new Store('log'),
 
     getByLevel: function (levels) {
       if (levels == undefined || ($.isArray(levels) && levels.length == 0)) return this.all();
@@ -354,10 +358,11 @@ $(function () {
     initialize: function () {
       if (!this.get('name')) return false;
       if (!this.get('label')) return false;
-      if (!this.get('checked')) this.set({checked: true});
+      if (this.get('checked')==undefined) this.set({checked: true});
       if (!this.get('handler')) this.set({handler: function () {
         return false;
       }});
+      this.save();
     }
   });
 
@@ -384,8 +389,9 @@ $(function () {
 
     filterChanged: function () {
       var filter = this.model;
-      //console.log(this.$('input').prop('checked'));
-      filter.set({checked: this.$('input').prop('checked')});
+      var isChecked = this.$('input').prop('checked');
+      var name = this.$('input').attr('name');
+      filter.save({checked: isChecked});
       var filtered = tasks.filter(filter.get('handler'));
       //console.log(filtered);
       if (filtered) $.each(filtered, function (i, task) {
@@ -450,30 +456,42 @@ $(function () {
       this.filters = new FilterList();
       // каждый раз пересоздаются модели фильтров
       this.filters.fetch();
-      this.filters.reset();
-      this.filters.create({
-        name: 'done',
-        label: 'completed',
-        checked: true,
-        handler: function (task) {
-          return task.get('done')
-        }
-      });
-      this.filters.create({
-        name: 'zero',
-        label: 'zero time',
-        checked: true,
-        handler: function (task) {
-          return task.get('time') == 0
-        }
-      });
+      //this.filters.reset();
+      if(this.filters.filter(function(item){ return item.get('name')=='done'; }).length == 0){
+        this.filters.create({
+          name: 'done',
+          label: 'completed',
+          checked: true
+        });
+      }
+
+      var done = this.filters.filter(function(item){ return item.get('name')=='done'; });
+      done[0].set({'handler': function (task) {
+        return task.get('done')
+      }});
+
+      if(this.filters.filter(function(item){ return item.get('name')=='zero'; }).length == 0) {
+        this.filters.create({
+          name: 'zero',
+          label: 'zero time',
+          checked: true
+        });
+      }
+
+      var zero = this.filters.filter(function(item){ return item.get('name')=='zero'; });
+      zero[0].set({'handler': function (task) {
+        return task.get('time') == 0
+      }});
+
       var cont = $('#filter-list');
       this.filters.each(function (filter) {
         var view = new FilterItemView({model: filter});
         cont.append(view.render().el);
+        //filter.destroy();
+        $('#'+filter.get('id')).trigger('change');
       });
 
-      this.syncToDrive('tasks.tasklist');
+      //this.syncToDrive('tasks.tasklist');
     },
 
     render: function () {
