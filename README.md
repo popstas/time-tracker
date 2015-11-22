@@ -1,7 +1,7 @@
-# time_tracker
+# time-tracker
 Backbone & Jquery UI app, hierarchical task timer.
 
-Demo: http://time.viasite.ru/
+Demo: http://popstas.github.io/time-tracker/
 
 ![Screenshot](img/screenshot.png?raw=true)
 
