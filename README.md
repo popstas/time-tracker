@@ -8,19 +8,18 @@ Demo: http://popstas.github.io/time-tracker/
 ## Features
  - fast add tasks
  - record time spent by task
- - desktop notifications
  - hierarchical drag-n-drop interface
  - no server-side, data stored in html storage in browser
  - import-export tasklist to json
  - filters by task status
  - tasklist summary
  - easy to select tasks and copy-paste to plaintext
- 
+ - desktop notifications
+
 ## Keys
- - Del - delete task(s)
- - Click with Ctrl - select some tasks
- - Enter in new task input - add task to selected task
- - Ctrl+Enter in new task input - add task to the end of list
- - Up/Down works on flat task lists
-
-
+ - `Ctrl+Click` - select some tasks
+ - `Enter` in new task input - add task to selected task
+ - `Ctrl+Enter` in new task input - add task to the end of list
+ - `Up`/`Down`, `j`/`k` move across list
+ - `F2`, `e` - edit task
+ - `Del`, `d` - delete task(s)

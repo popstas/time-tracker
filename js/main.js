@@ -174,8 +174,15 @@ $(function () {
             }
             else {
                 var order = this.focused()[0].get('order');
-                var next = this.getByOrder(order + 1);
-                if (next.length > 0) $('#' + next[0].id).click();
+                var next, next_el;
+                while((next = this.getByOrder(order + 1)).length > 0){
+                    next_el = $('#' + next[0].id);
+                    if(next_el.is(':visible')){
+                        next_el.click();
+                        break;
+                    }
+                    order++;
+                }
             }
         },
 
@@ -186,8 +193,15 @@ $(function () {
             }
             else {
                 var order = this.focused()[0].get('order');
-                var prev = this.getByOrder(order - 1);
-                if (prev.length == 1) $('#' + prev[0].id).click();
+                var prev, prev_el;
+                while((prev = this.getByOrder(order - 1)).length > 0){
+                    prev_el = $('#' + prev[0].id);
+                    if(prev_el.is(':visible')){
+                        prev_el.click();
+                        break;
+                    }
+                    order--;
+                }
             }
         },
 
@@ -264,7 +278,7 @@ $(function () {
                 $(this.$('[name="' + fields[i] + '"]')).val(vals[fields[i]]);
             }
             // TODO: при переключении фокуса с времени на название задачи происходит потеря фокуса и сохранение
-            this.inputs.find('[name="time"]').bind('blur', this.close);
+            //this.inputs.find('[name="time"]').bind('blur', this.close);
         },
 
         toggleDone: function () {
@@ -277,12 +291,14 @@ $(function () {
             var isFocused = $(this.id).hasClass('focused');
             if (!e.ctrlKey) $('.task').removeClass('focused');
             if (!isFocused) $(this.id).addClass('focused');
+            $('#new-task input').blur();
         },
 
         edit: function (e) {
             $(this.id).addClass('editing');
             if ($(e.target).is('input')) return;
             //console.log($(e.target));
+            this.setContent();
             if ($(e.target).hasClass('task-time')) $(this.id).find('[name="time"]').focus().select();
             else if ($(e.target).hasClass('task-time_plan')) $(this.id).find('[name="time_plan"]').focus().select();
             else if ($(e.target).hasClass('task-name')) $(this.id).find('[name="name"]').focus().select();
@@ -321,7 +337,10 @@ $(function () {
         },
 
         keypress: function (e) {
-            if (e.keyCode == 13) this.close();
+            if (e.keyCode == 13){
+                tasks.selectNext();
+                this.close(true);
+            }
             if (e.keyCode == 27) {
                 $(this.id).find('[name="name"]').val(this.model.get('name'));
                 $(this.id).find('[name="time_plan"]').val(Math.round(this.model.get('time_plan') / 60));
@@ -427,10 +446,12 @@ $(function () {
             'sortupdate #task-list': 'updateOrder',
             'click header .settings': 'showSettings',
             'click header .zero-times': 'zeroTimes',
+            'click .help': 'help',
             'click .export-json': 'exportJson',
             'click .export-table': 'exportTable',
             'click .export-email': 'exportEmail',
-            'keypress': 'globalKeypress',
+            //'keypress': 'globalKeypress',
+            'keydown': 'globalKeypress',
             'timeChanged .task': 'timeChanged',
             'start .task': 'taskStarted',
             'stop .task': 'taskStopped',
@@ -507,6 +528,7 @@ $(function () {
                 $('#' + filter.get('id')).trigger('change');
             });
 
+            this.updateOrder();
             //this.syncToDrive('tasks.tasklist');
         },
 
@@ -524,10 +546,6 @@ $(function () {
             if (title == '') title = this.name;
             else title = title + ' - ' + this.name;
             $('title').text(title);
-        },
-
-        addLog: function (logitem) {
-
         },
 
         addTask: function (task) {
@@ -592,6 +610,7 @@ $(function () {
             }
             if (!this.createFromJSON()) {
                 tasks.create(this.newAttributes());
+                this.updateOrder();
             }
             this.inputs.val('');
         },
@@ -608,12 +627,6 @@ $(function () {
             }
             return false;
         },
-
-        /*keypress: function(e,u){
-         console.log(e);
-         console.log(u);
-         if (e.keyCode == 113) this.edit();
-         },*/
 
         updateOrder: function () {
             var order = 1;
@@ -660,6 +673,17 @@ $(function () {
             $('.json-data').select();
         },
 
+        help: function () {
+            var tmpl = _.template($('#help-template').html());
+            var html = tmpl();
+            $(html).dialog({
+                title: 'Help',
+                width: 400,
+                height: 400,
+                modal: true
+            });
+        },
+
         exportTable: function () {
             alert('Not implemented');
         },
@@ -669,22 +693,51 @@ $(function () {
         },
 
         globalKeypress: function (e) {
-            if (e.keyCode == 46) { // del
+            if (e.keyCode == 27 || e.keyCode == 38 || e.keyCode == 40){ // escape, up, down
+                $('#new-task input').blur();
+            }
+
+            if($(e.target).is('input')){
+                return true;
+            }
+
+            if (e.keyCode == 46 || e.keyCode == 100 || e.keyCode == 68) { // del, d
                 var focused = tasks.focused();
                 if (focused.length > 0) {
                     if (confirm('Delete tasks (' + focused.length + ')?')) {
+                        var order = tasks.focused()[0].get('order');
+                        var next = tasks.getByOrder(order + 1);
+
                         $.each(focused, function (ind, task) {
                             task.clear();
                         });
-                    }
 
+                        this.updateOrder();
+
+                        if (next.length > 0) $('#' + next[0].id).click();
+                    }
                 }
+                return false;
             }
-            if (e.keyCode == 40) { // down
+            if (e.keyCode == 40 || e.keyCode == 106 || e.keyCode == 74) { // down, j
                 tasks.selectNext();
+                return false;
             }
-            if (e.keyCode == 38) { // up
+            if (e.keyCode == 38 || e.keyCode == 107 || e.keyCode == 75) { // up, k
                 tasks.selectPrevious();
+                return false;
+            }
+            if (e.keyCode == 113 || e.keyCode == 101 || e.keyCode == 69) { // F2, e
+                if(tasks.focused().length == 1){
+                    var focused_id = '#'+tasks.focused()[0].id;
+                    $(focused_id).addClass('editing');
+                    $(focused_id).find('[name="name"]').focus().select();
+                }
+                return false;
+            }
+            if (e.keyCode == 13) { // enter
+                $('#new-task input:first').focus();
+                return false;
             }
         },
 
@@ -749,7 +802,7 @@ $(function () {
         },
 
         gdrivePicker: function () {
-// The Browser API key obtained from the Google Developers Console.
+            // The Browser API key obtained from the Google Developers Console.
             var googleDeveloperKey = 'ABC123 ... ';
 
             // The Client ID obtained from the Google Developers Console.

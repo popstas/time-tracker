@@ -85,7 +85,7 @@
 
         <div class="edit">
             <input name="name" class="task-name-edit" type="text" value=""/>
-            <span class="time">
+            <span class="edit-time">
                 <input name="time_plan" class="task-time-edit" type="text" value=""/>
                 <input name="time" class="task-time-edit" type="text" value=""/>
             </span>
@@ -129,10 +129,31 @@
 <script type="text/template" id="settings-template">
     <div>
         <div class="block-share share">
-            <span class="task-button share"><i class="icon-share"></i></span>
+            <span class="task-button help"><i class="icon-help"></i></span>
             <span title="Please, copy textarea content and paste in 'new task' input" class="task-button export-json"><i class="icon-code"></i></span>
         </div>
         <div class=""><button class="settings-notify-desktop">Enable desktop notifications</button></div>
+    </div>
+</script>
+
+
+<script type="text/template" id="help-template">
+    <div>
+        <div>Keys:</div>
+
+        <ul>
+            <li><b>&darr; / &uarr;, j / k</b> - navigation</li>
+            <li><b>F2, e</b> - edit task</li>
+            <li><b>Del, d</b> - delete task</li>
+            <li><b>Enter</b> - add task to selected task, or focus to new task input</li>
+            <li><b>Ctrl-Enter</b> - add task to end of list</li>
+        </ul>
+        <br/>
+        <p>You can select tasks with ctrl+click.</p>
+        <p>Double click on task name or time switch to task edit.</p>
+        <p>You can drag tasks and change task hierarchy.</p>
+        <p>You can select all tasks.and paste it to notepad.</p>
+        <p><a href="https://github.com/popstas/time-tracker">Project on github.com</a></p>
     </div>
 </script>
 
