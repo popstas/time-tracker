@@ -693,6 +693,8 @@ $(function () {
         },
 
         globalKeypress: function (e) {
+            var focused_id;
+
             if (e.keyCode == 27 || e.keyCode == 38 || e.keyCode == 40){ // escape, up, down
                 $('#new-task input').blur();
             }
@@ -729,7 +731,7 @@ $(function () {
             }
             if (e.keyCode == 113 || e.keyCode == 101 || e.keyCode == 69) { // F2, e
                 if(tasks.focused().length == 1){
-                    var focused_id = '#'+tasks.focused()[0].id;
+                    focused_id = '#'+tasks.focused()[0].id;
                     $(focused_id).addClass('editing');
                     $(focused_id).find('[name="name"]').focus().select();
                 }
@@ -737,6 +739,18 @@ $(function () {
             }
             if (e.keyCode == 13) { // enter
                 $('#new-task input:first').focus();
+                return false;
+            }
+            if (e.keyCode == 32) { // space
+                if(tasks.focused().length == 1){
+                    focused_id = '#'+tasks.focused()[0].id;
+                    if($(focused_id).hasClass('started')){
+                        $(focused_id).find('.task-stop').click();
+                    }
+                    else {
+                        $(focused_id).find('.task-start').click();
+                    }
+                }
                 return false;
             }
         },

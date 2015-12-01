@@ -25,3 +25,4 @@ Blog post: http://popstas.github.io/blog/2015/11/22/simple-time-tracker/
  - `Up`/`Down`, `j`/`k` move across list
  - `F2`, `e` - edit task
  - `Del`, `d` - delete task(s)
+ - `Space` - start/stop task
